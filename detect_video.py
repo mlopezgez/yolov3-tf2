@@ -79,7 +79,7 @@ def main(_argv):
                           cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
         if FLAGS.output:
             out.write(img)
-        cv2.imshow('output', img)
+        #cv2.imshow('output', img)
         if cv2.waitKey(1) == ord('q'):
             break
 
