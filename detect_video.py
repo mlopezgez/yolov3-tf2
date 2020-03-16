@@ -2,6 +2,7 @@ import time
 from absl import app, flags, logging
 from absl.flags import FLAGS
 import cv2
+import json
 import tensorflow as tf
 from yolov3_tf2.models import (
     YoloV3, YoloV3Tiny
@@ -46,9 +47,11 @@ def main(_argv):
         vid = cv2.VideoCapture(FLAGS.video)
 
     frame_count = int(vid.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_num = 1
     pbar = tqdm(total=frame_count)
     out = None
 
+    frames_coordinates = {}
     if FLAGS.output:
         # by default VideoCapture returns float instead of int
         width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -75,18 +78,25 @@ def main(_argv):
         times.append(t2-t1)
         times = times[-20:]
 
-        img = draw_outputs(img, (boxes, scores, classes, nums), class_names)
-        #print(classes)
-        img = cv2.putText(img, "Time: {:.2f}ms".format(sum(times)/len(times)*1000), (0, 30),
-                          cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
+        img, frame_coordinates = draw_outputs(img, (boxes, scores, classes, nums), class_names)
+
+        frame_string = "Frame: {}".format(frame_num)
+        frames_coordinates[frame_string] = frame_coordinates
+
+        #img = cv2.putText(img, "Time: {:.2f}ms".format(sum(times)/len(times)*1000), (0, 30),
+        #                  cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
         if FLAGS.output:
             out.write(img)
         
         if cv2.waitKey(1) == ord('q'):
             break
+        
+        frame_num += 1
+
 
     cv2.destroyAllWindows()
-
+    with open('output_coordinates.json', 'w') as outfile:
+        json.dump(frames_coordinates, outfile)
 
 if __name__ == '__main__':
     try:
