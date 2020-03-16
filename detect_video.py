@@ -56,14 +56,14 @@ def main(_argv):
         out = cv2.VideoWriter(FLAGS.output, codec, fps, (width, height))
 
     while True:
-        _, img = vid.read()
+        ret, img = vid.read()
 
         if img is None:
             logging.warning("Empty Frame")
             time.sleep(0.1)
-            continue
+            break
 
-        img_in = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
+        img_in = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_in = tf.expand_dims(img_in, 0)
         img_in = transform_images(img_in, FLAGS.size)
 
@@ -74,6 +74,7 @@ def main(_argv):
         times = times[-20:]
 
         img = draw_outputs(img, (boxes, scores, classes, nums), class_names)
+        #print(classes)
         img = cv2.putText(img, "Time: {:.2f}ms".format(sum(times)/len(times)*1000), (0, 30),
                           cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
         if FLAGS.output:
