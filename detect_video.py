@@ -8,7 +8,7 @@ from yolov3_tf2.models import (
 )
 from yolov3_tf2.dataset import transform_images
 from yolov3_tf2.utils import draw_outputs
-
+from tqdm import tqdm
 
 flags.DEFINE_string('classes', './data/coco.names', 'path to classes file')
 flags.DEFINE_string('weights', './checkpoints/yolov3.tf',
@@ -45,6 +45,8 @@ def main(_argv):
     except:
         vid = cv2.VideoCapture(FLAGS.video)
 
+    frame_count = int(vid.get(cv2.CAP_PROP_FRAME_COUNT))
+    pbar = tqdm(total=frame_count)
     out = None
 
     if FLAGS.output:
@@ -57,7 +59,7 @@ def main(_argv):
 
     while True:
         ret, img = vid.read()
-
+        pbar.update(1)
         if img is None:
             logging.warning("Empty Frame")
             time.sleep(0.1)
@@ -79,7 +81,7 @@ def main(_argv):
                           cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
         if FLAGS.output:
             out.write(img)
-        #cv2.imshow('output', img)
+        
         if cv2.waitKey(1) == ord('q'):
             break
 
