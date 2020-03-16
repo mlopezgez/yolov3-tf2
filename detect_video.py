@@ -85,7 +85,7 @@ def main(_argv):
         if cv2.waitKey(1) == ord('q'):
             break
 
-    #cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
