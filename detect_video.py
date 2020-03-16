@@ -59,12 +59,12 @@ def main(_argv):
 
     while True:
         ret, img = vid.read()
-        pbar.update(1)
+        
         if img is None:
             logging.warning("Empty Frame")
             time.sleep(0.1)
             break
-
+        pbar.update(1)
         img_in = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_in = tf.expand_dims(img_in, 0)
         img_in = transform_images(img_in, FLAGS.size)
